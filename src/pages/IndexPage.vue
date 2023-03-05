@@ -24,17 +24,21 @@
       position="top-right"
       :offset="[18, 18]"
     >
-      <q-btn
+      <!-- <q-btn
+        push
+        class="shadow-10"
         color="primary"
         label="Next"
         @click="mover"
-      />
+      /> -->
     </q-page-sticky>
     <q-page-sticky
       position="bottom-right"
       :offset="[18, 18]"
     >
       <q-btn
+        push
+        class="shadow-10"
         color="primary"
         :icon="isFullScreen ? 'fullscreen_exit' : 'fullscreen'"
         @click="fuller"
@@ -54,8 +58,10 @@
           v-show="showMenu"
           id="navCard"
           bordered
+          class="shadow-10"
         >
           <q-splitter
+            after-class="customScroll"
             v-model="splitterModel"
             style="height: 50vh"
           >
@@ -64,22 +70,22 @@
               <q-tabs
                 v-model="tab"
                 vertical
-                class="text-teal"
+                class="text-teal flex flex-center space-around justify-center"
               >
                 <q-tab
-                  name="mails"
-                  icon="mail"
-                  label="Mails"
+                  name="home"
+                  icon="home"
+                  label="Home"
                 />
                 <q-tab
-                  name="alarms"
-                  icon="alarm"
-                  label="Alarms"
+                  name="empathize"
+                  icon="public"
+                  label="Empathize"
                 />
                 <q-tab
-                  name="movies"
-                  icon="movie"
-                  label="Movies"
+                  name="about"
+                  icon="info"
+                  label="About Us"
                 />
               </q-tabs>
             </template>
@@ -93,28 +99,88 @@
                 transition-prev="jump-up"
                 transition-next="jump-up"
               >
-                <q-tab-panel name="mails">
-                  <div class="text-h4 q-mb-md">Mails</div>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                <q-tab-panel name="home">
+                  <div class="text-h4 q-mb-md">Hello, Friend 👋</div>
+                  <div class="text-h6">Welcome to Inclusive Insights!</div>
+                  <br>
+                  <p>
+                    Our mission is to help reduce bias and discrimination in the workplace so women can thrive in their careers and their achievements can be celebrated.
+                  </p>
+                  <p>
+                    Our tool provides guidance and insights on how to create more inclusive and equitable workplaces, recognize and address bias, and learn from the experiences of influential women who have revolutionized their industries. Whether you're an employer, employee, or simply interested in learning more about diversity and inclusion, Inclusive Insights has something for everyone.
+                  </p>
                 </q-tab-panel>
 
-                <q-tab-panel name="alarms">
-                  <div class="text-h4 q-mb-md">Alarms</div>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                <q-tab-panel name="empathize">
+                  <div class="text-h4 q-mb-md">We Accept All 🤗</div>
+                  <div class="text-h6">Understand And Be Understood</div>
+                  <br>
+                  <p>
+                    Want to learn from the experiences of some of the most influential women in the industry?
+                  </p>
+                  <p>
+                    Our Chat feature allows you to simulate conversations with historical or contemporary influential women who have revolutionized their industries. You can choose a scenario or input a scenario you are personally facing, and the chatbot will simulate a conversation in the style of the chosen influential woman.
+                  </p>
+                  <p>
+                    Each conversation is narrated by a text-to-speech API, providing users with insights and guidance on how to overcome bias and discrimination in the workplace. You can choose from a range of influential women, including Ada Lovelace, Grace Hopper, and Ruth Bader Ginsburg, among others. Start a conversation today and learn from the best!
+                  </p>
                 </q-tab-panel>
 
-                <q-tab-panel name="movies">
-                  <div class="text-h4 q-mb-md">Movies</div>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                <q-tab-panel name="about">
+                  <div class="text-h4 q-mb-md">About Us 💻</div>
+                  <div class="text-h6">Why Make This?</div>
+                  <br>
+                  <p>
+                    Inclusive Insights was created as part of the Avanade International Women's Day Hackathon, with the goal of developing innovative solutions to reduce bias and discrimination in the workplace.
+                  </p>
+                  <p>
+                    Our team consists of passionate individuals with a diverse range of backgrounds and experiences, united by our shared commitment to creating more inclusive and equitable workplaces.
+                  </p>
+                  <p>
+                    We believe that everyone deserves a fair and equal chance to succeed, regardless of their gender, race, age, or background, and we're committed to making that a reality through our work.
+                  </p>
                 </q-tab-panel>
               </q-tab-panels>
             </template>
 
           </q-splitter>
+
+          <q-btn
+            id="chatBtn"
+            color="secondary"
+            icon="chat"
+            stack
+            rounded
+            push
+            class="shadow-4"
+            @click="chatter"
+          >
+            Chat Now
+          </q-btn>
+        </q-card>
+      </transition>
+    </q-page-sticky>
+    <q-page-sticky
+      position="left"
+      :offset="[72, 0]"
+    >
+      <transition
+        appear
+        enter-active-class="animated zoomIn"
+        leave-active-class="animated zoomOut"
+        style="animation-duration: 1s"
+      >
+        <q-card v-show="showChat">
+          <div class="text-h2">
+            Chat Here
+          </div>
+          <div>
+            <q-btn
+              color="warning"
+              label="Menu"
+              @click="resumer"
+            />
+          </div>
         </q-card>
       </transition>
     </q-page-sticky>
@@ -136,16 +202,46 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     let index = -1;
-    const arr = JSON.parse(localStorage.getItem("config")) || [];
+    const orientations = {
+      menu: [
+        {
+          pos: { x: -8, y: 7, z: -26.5 },
+          rot: { x: -6.123233995736766e-17, y: -2.600000000000001, z: 0 },
+        },
+        {
+          pos: { x: 34, y: 7.5, z: -28.5 },
+          rot: { x: -6.123233995736766e-17, y: -4.100000000000001, z: 0 },
+        },
+        {
+          pos: { x: 46.5, y: 8, z: 18 },
+          rot: { x: -6.123233995736766e-17, y: -5.999999999999995, z: 0 },
+        },
+        {
+          pos: { x: 11.5, y: 7.5, z: 5.5 },
+          rot: { x: -6.123233995736766e-17, y: -6.5999999999999925, z: 0 },
+        },
+      ],
+      chat: [
+        {
+          pos: { x: 29.5, y: 8, z: -25.5 },
+          rot: { x: -6.123233995736766e-17, y: -2, z: 0 },
+        },
+      ],
+    };
+    let arr = orientations.menu;
     const sizes = {
       width: window.innerWidth,
       height: window.innerHeight,
     };
     const mover = ref();
     const fuller = ref();
+    const chatter = ref();
+    const resumer = ref();
     const isFullScreen = ref(false);
     const showTitle = ref(true);
     const showMenu = ref(false);
+    const showChat = ref(false);
+    const timeline = gsap.timeline();
 
     const startup = async (dismiss) => {
       /** @type {HTMLCanvasElement}*/
@@ -264,30 +360,30 @@ export default defineComponent({
         window.requestAnimationFrame(tick);
       };
 
-      window.addEventListener("keyup", (e) => {
-        if (e.key === "z") {
-          const pos = camera.position;
-          const rot = camera.rotation;
-          arr.push({
-            pos: {
-              x: pos.x,
-              y: pos.y,
-              z: pos.z,
-            },
-            rot: {
-              x: rot.x,
-              y: rot.y,
-              z: rot.z,
-            },
-          });
-          console.log(arr);
-          localStorage.setItem("config", JSON.stringify(arr));
-        }
-        if (e.key === "v") {
-          arr.splice(0, arr.length);
-          localStorage.removeItem("config");
-        }
-      });
+      // window.addEventListener("keyup", (e) => {
+      //   if (e.key === "z") {
+      //     const pos = camera.position;
+      //     const rot = camera.rotation;
+      //     arr.push({
+      //       pos: {
+      //         x: pos.x,
+      //         y: pos.y,
+      //         z: pos.z,
+      //       },
+      //       rot: {
+      //         x: rot.x,
+      //         y: rot.y,
+      //         z: rot.z,
+      //       },
+      //     });
+      //     console.log(arr);
+      //     localStorage.setItem("config", JSON.stringify(arr));
+      //   }
+      //   if (e.key === "v") {
+      //     arr.splice(0, arr.length);
+      //     localStorage.removeItem("config");
+      //   }
+      // });
 
       window.addEventListener("resize", () => {
         sizes.width = window.innerWidth;
@@ -306,25 +402,40 @@ export default defineComponent({
 
       tick();
 
-      const moveCam = async () => {
+      const moveCam = async (alt) => {
         index++;
         if (index > arr.length - 1) {
           index = 0;
         }
-        gsap.to(camera.position, {
+
+        const i = alt == null ? index : alt;
+        const duration = alt == null ? 10 : 1;
+
+        const positioning = gsap.to(camera.position, {
           x: arr[index].pos.x,
           y: arr[index].pos.y,
           z: arr[index].pos.z,
-          duration: 1,
+          duration,
           ease: "linear",
+          immediateRender: false,
         });
-        gsap.to(camera.rotation, {
+        const rotating = gsap.to(camera.rotation, {
           x: arr[index].rot.x,
           y: arr[index].rot.y,
           z: arr[index].rot.z,
-          duration: 1,
+          duration,
           ease: "linear",
+          immediateRender: false,
         });
+
+        timeline
+          .add(positioning, 0)
+          .add(rotating, 0)
+          .play(0)
+          .eventCallback("onComplete", () => {
+            timeline.pause().remove(positioning).remove(rotating);
+            if (!showChat.value) moveCam();
+          });
       };
 
       const goFullScreen = async () => {
@@ -342,7 +453,25 @@ export default defineComponent({
         }
       };
 
-      return { moveCam, goFullScreen };
+      const goChat = async () => {
+        timeline.pause().kill();
+        for (let child of timeline.getChildren()) {
+          child.kill();
+        }
+        arr = orientations.chat;
+        showMenu.value = false;
+        showChat.value = true;
+        moveCam(0);
+      };
+
+      const goMenu = async () => {
+        showMenu.value = true;
+        showChat.value = false;
+        arr = orientations.menu;
+        moveCam(index);
+      };
+
+      return { moveCam, goFullScreen, goChat, goMenu };
     };
 
     onMounted(async () => {
@@ -355,9 +484,11 @@ export default defineComponent({
           type: "ongoing",
         });
         const threeApi = await startup(notif);
-        const { moveCam, goFullScreen } = threeApi;
+        const { moveCam, goFullScreen, goChat, goMenu } = threeApi;
         mover.value = moveCam;
         fuller.value = goFullScreen;
+        chatter.value = goChat;
+        resumer.value = goMenu;
         if (arr.length) mover.value();
       } else {
         const warning = WebGL.getWebGLErrorMessage();
@@ -374,11 +505,14 @@ export default defineComponent({
     return {
       mover,
       fuller,
+      chatter,
+      resumer,
       isFullScreen,
-      tab: ref("mails"),
+      tab: ref("home"),
       splitterModel: ref(20), //add shadows, bruh
       showTitle,
       showMenu,
+      showChat,
     };
   },
 });
@@ -396,6 +530,7 @@ export default defineComponent({
 	outline: none
 
 #navCard
+	position: relative
 	width: 50vw
 
 #title
@@ -404,4 +539,28 @@ export default defineComponent({
 	line-height: 8rem
 	font-weight: 800
 	text-shadow: 6px -5px #3E94E7, 5px -4px #3E94E7, 4px -5px #3E94E7, 4px -6px #3E94E7, 3px -4px #3E94E7,3px -5px #3E94E7, 2px -3px #3E94E7, 2px -4px #3E94E7,1px -2px #3E94E7, 1px -3px #3E94E7, 0 -1px #3E94E7,0 -2px #3E94E7, -1px 0 #3E94E7, -1px 2px #3E94E7, -2px 1px #3E94E7, -2px 3px #3E94E7, -3px 2px #3E94E7, -3px 4px #3E94E7, -4px 3px #3E94E7, -4px 5px #3E94E7, -5px 4px #3E94E7, -5px 6px #3E94E7, -6px 5px #3E94E7, -6px 7px #3E94E7, -7px 6px #3E94E7, -7px 8px #3E94E7, -8px 7px #3E94E7, -8px 9px #3E94E7, -9px 8px #3E94E7, -9px 10px #3E94E7, -10px 9px #3E94E7, -10px 11px #3E94E7, -11px 10px #3E94E7, -11px 12px #3E94E7, -12px 11px #3E94E7, -12px 13px #3E94E7, -13px 12px #3E94E7, -13px 14px #3E94E7, -14px 13px #3E94E7, -14px 15px #3E94E7, -15px 14px #3E94E7, -15px 16px #3E94E7, -16px 15px #3E94E7, -16px 17px #3E94E7, -17px 16px #3E94E7, -17px 18px #3E94E7, -18px 17px #3E94E7, -18px 19px #3E94E7, -19px 18px #3E94E7, -19px 20px #3E94E7, -20px 19px #3E94E7, -20px 21px #3E94E7, -21px 20px #3E94E7, -21px 22px #3E94E7, -22px 21px #3E94E7, -22px 23px #3E94E7, -23px 25px #3E94E7, -23px 24px #3E94E7, -24px 26px #3E94E7, -24px 25px #3E94E7, -25px 27px #3E94E7, -25px 26px #3E94E7, -26px 28px #3E94E7, -26px 27px #3E94E7, -27px 29px #3E94E7, -27px 28px #3E94E7, -28px 30px #3E94E7, -28px 29px #3E94E7, -29px 31px #3E94E7, -29px 30px #3E94E7, -30px 32px #3E94E7, -30px 31px #3E94E7,
+
+#chatBtn
+	position: absolute
+	top: 2rem
+	right: 3rem
+
+.customScroll::-webkit-scrollbar-track
+
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+	background-color: #F5F5F5
+
+.customScroll::-webkit-scrollbar
+
+	width: 10px
+	background-color: #F5F5F5
+
+.customScroll::-webkit-scrollbar-thumb
+
+	background-color: #F90
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%, transparent 75%, transparent)
+	border-radius: 14px
+
+.navBar
+	background-color: #3E94E7
 </style>
