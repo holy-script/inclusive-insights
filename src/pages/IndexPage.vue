@@ -170,16 +170,74 @@
         leave-active-class="animated zoomOut"
         style="animation-duration: 1s"
       >
-        <q-card v-show="showChat">
-          <div class="text-h2">
-            Chat Here
-          </div>
-          <div>
-            <q-btn
-              color="warning"
-              label="Menu"
-              @click="resumer"
-            />
+        <q-card
+          bordered
+          v-show="showChat"
+          id="chatCard"
+          class="shadow-10 flex column justify-evenly"
+        >
+          <q-btn
+            color="warning"
+            label="Menu"
+            @click="resumer"
+            id="menuBtn"
+          />
+          <q-scroll-area
+            id="chatBox"
+            class="q-pa-md"
+            ref="scrollArea"
+            @scroll="monitorScroll"
+          >
+            <q-chat-message
+              v-for="(msg, index) in chatsList"
+              :key="index"
+              :name="msg.byUser ? 'You' : 'ChatGPT Narrator'"
+              :text="[msg.chat]"
+              :sent="msg.byUser"
+              :stamp="msg.time"
+            >
+            </q-chat-message>
+          </q-scroll-area>
+          <div
+            id="chatInput"
+            class="flex row justify-evenly items-center"
+          >
+            <q-form
+              autofocus
+              @submit.prevent.stop
+              style="width: 90%"
+            >
+              <q-input
+                rounded
+                outlined
+                label="Type Here..."
+                v-model="chatQuery"
+                :disable="loadingChat"
+                maxlength="200"
+              >
+                <template v-slot:prepend>
+                  <q-avatar>
+                    <img :src="chatgptLogo">
+                    <q-tooltip>
+                      Powered by ChatGPT!
+                    </q-tooltip>
+                  </q-avatar>
+                </template>
+                <template v-slot:append>
+                  <q-btn
+                    color="secondary"
+                    icon="send"
+                    rounded
+                    push
+                    :disable="!chatQuery"
+                    :loading="loadingChat"
+                    class="shadow-4"
+                    type="submit"
+                    @click="sendChat"
+                  />
+                </template>
+              </q-input>
+            </q-form>
           </div>
         </q-card>
       </transition>
@@ -188,13 +246,16 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import WebGL from "three/examples/jsm/capabilities/WebGL";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { useQuasar } from "quasar";
 import { gsap } from "gsap";
+import { api } from "boot/axios";
+
+import chatgptLogo from "assets/chatgpt-logo.png";
 
 export default defineComponent({
   name: "IndexPage",
@@ -242,6 +303,51 @@ export default defineComponent({
     const showMenu = ref(false);
     const showChat = ref(false);
     const timeline = gsap.timeline();
+    const chatQuery = ref("");
+    const womenList = [
+      "Justice Ruth Bader Ginsburg",
+      "Grace Hopper",
+      "Marissa Mayer",
+    ];
+    const chatsList = ref([]);
+    const loadingChat = ref(false);
+    const scrollArea = ref(null);
+    const scrollerHeight = ref(0);
+
+    const getTime = (date) => {
+      let hours = date.getHours();
+      let minutes = date.getMinutes();
+      let ampm = hours >= 12 ? "pm" : "am";
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      return `${hours}:${minutes} ${ampm}`;
+    };
+
+    const sendChat = async () => {
+      const chat = chatQuery.value;
+      loadingChat.value = true;
+      chatQuery.value = "";
+
+      chatsList.value.push({
+        chat,
+        byUser: true,
+        time: getTime(new Date()),
+      });
+
+      const { data } = await api.post("/detect", {
+        chat,
+      });
+
+      chatsList.value.push({
+        chat: data,
+        byUser: false,
+        time: getTime(new Date()),
+      });
+
+      loadingChat.value = false;
+      setTimeout(() => {}, 3000);
+    };
 
     const startup = async (dismiss) => {
       /** @type {HTMLCanvasElement}*/
@@ -404,12 +510,12 @@ export default defineComponent({
 
       const moveCam = async (alt) => {
         index++;
+
         if (index > arr.length - 1) {
           index = 0;
         }
 
-        const i = alt == null ? index : alt;
-        const duration = alt == null ? 10 : 1;
+        const duration = alt == undefined ? 10 : 1;
 
         const positioning = gsap.to(camera.position, {
           x: arr[index].pos.x,
@@ -475,6 +581,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      console.log((await api.get("")).data);
       if (WebGL.isWebGLAvailable()) {
         const notif = $q.notify({
           message: "Loading assets 0%...",
@@ -502,6 +609,14 @@ export default defineComponent({
       }
     });
 
+    const monitorScroll = (info) => {
+      scrollerHeight.value = info.verticalSize;
+    };
+
+    watch(scrollerHeight, (val) => {
+      scrollArea.value.setScrollPosition("vertical", val);
+    });
+
     return {
       mover,
       fuller,
@@ -513,6 +628,14 @@ export default defineComponent({
       showTitle,
       showMenu,
       showChat,
+      chatQuery,
+      chatgptLogo,
+      sendChat,
+      loadingChat,
+      chatsList,
+      scrollArea,
+      scrollerHeight,
+      monitorScroll,
     };
   },
 });
@@ -563,4 +686,25 @@ export default defineComponent({
 
 .navBar
 	background-color: #3E94E7
+
+#chatCard
+	width: 40vw
+	height: 60vh
+	position: relative
+
+#menuBtn
+	position: absolute
+	top: -3rem
+	left: 0rem
+
+#chatBox
+	height: 80%
+	background: #3E94E7
+	border-radius: 7px 7px 0 0
+	box-shadow: 0 -7px 9px -7px rgb(0 0 0 / 70%) inset
+
+#chatInput
+	height: 20%
+	width: 100%
+	border-radius: 0 0 7px 7px
 </style>
