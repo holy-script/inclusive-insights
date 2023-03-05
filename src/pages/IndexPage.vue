@@ -1,6 +1,25 @@
 <template>
-  <q-page id="app">
+  <q-page
+    id="app"
+    class="flex flex-center bg-black"
+  >
     <canvas id="screen"></canvas>
+    <transition
+      appear
+      enter-active-class="animated fadeIn"
+      leave-active-class="animated fadeOut"
+      style="animation-duration: 2s"
+    >
+      <div
+        id="title"
+        class="text-h2 text-center text-white absolute-center"
+        v-show="showTitle"
+      >
+        Inclusive
+        <wbr>
+        Insights
+      </div>
+    </transition>
     <q-page-sticky
       position="top-right"
       :offset="[18, 18]"
@@ -23,73 +42,81 @@
     </q-page-sticky>
     <q-page-sticky
       position="right"
-      :offset="[36, 0]"
+      :offset="[72, 0]"
     >
-      <q-card
-        id="navCard"
-        bordered
+      <transition
+        appear
+        enter-active-class="animated zoomIn"
+        leave-active-class="animated zoomOut"
+        style="animation-duration: 1s"
       >
-        <q-splitter
-          v-model="splitterModel"
-          style="height: 50vh"
+        <q-card
+          v-show="showMenu"
+          id="navCard"
+          bordered
         >
+          <q-splitter
+            v-model="splitterModel"
+            style="height: 50vh"
+          >
 
-          <template v-slot:before>
-            <q-tabs
-              v-model="tab"
-              vertical
-              class="text-teal"
-            >
-              <q-tab
-                name="mails"
-                icon="mail"
-                label="Mails"
-              />
-              <q-tab
-                name="alarms"
-                icon="alarm"
-                label="Alarms"
-              />
-              <q-tab
-                name="movies"
-                icon="movie"
-                label="Movies"
-              />
-            </q-tabs>
-          </template>
+            <template v-slot:before>
+              <q-tabs
+                v-model="tab"
+                vertical
+                class="text-teal"
+              >
+                <q-tab
+                  name="mails"
+                  icon="mail"
+                  label="Mails"
+                />
+                <q-tab
+                  name="alarms"
+                  icon="alarm"
+                  label="Alarms"
+                />
+                <q-tab
+                  name="movies"
+                  icon="movie"
+                  label="Movies"
+                />
+              </q-tabs>
+            </template>
 
-          <template v-slot:after>
-            <q-tab-panels
-              v-model="tab"
-              animated
-              swipeable
-              vertical
-              transition-prev="jump-up"
-              transition-next="jump-up"
-            >
-              <q-tab-panel name="mails">
-                <div class="text-h4 q-mb-md">Mails</div>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-              </q-tab-panel>
+            <template v-slot:after>
+              <q-tab-panels
+                v-model="tab"
+                animated
+                swipeable
+                vertical
+                transition-prev="jump-up"
+                transition-next="jump-up"
+              >
+                <q-tab-panel name="mails">
+                  <div class="text-h4 q-mb-md">Mails</div>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                </q-tab-panel>
 
-              <q-tab-panel name="alarms">
-                <div class="text-h4 q-mb-md">Alarms</div>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-              </q-tab-panel>
+                <q-tab-panel name="alarms">
+                  <div class="text-h4 q-mb-md">Alarms</div>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                </q-tab-panel>
 
-              <q-tab-panel name="movies">
-                <div class="text-h4 q-mb-md">Movies</div>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
-              </q-tab-panel>
-            </q-tab-panels>
-          </template>
+                <q-tab-panel name="movies">
+                  <div class="text-h4 q-mb-md">Movies</div>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
+                </q-tab-panel>
+              </q-tab-panels>
+            </template>
 
-        </q-splitter>
-      </q-card>
+          </q-splitter>
+        </q-card>
+      </transition>
     </q-page-sticky>
   </q-page>
 </template>
@@ -117,8 +144,10 @@ export default defineComponent({
     const mover = ref();
     const fuller = ref();
     const isFullScreen = ref(false);
+    const showTitle = ref(true);
+    const showMenu = ref(false);
 
-    const startup = async () => {
+    const startup = async (dismiss) => {
       /** @type {HTMLCanvasElement}*/
       const canvas = document.getElementById("screen");
 
@@ -163,9 +192,7 @@ export default defineComponent({
       scene.add(light2);
 
       loader.load(
-        // resource URL
-        "src/assets/museum/scene.gltf",
-        // called when the resource is loaded
+        "scene.gltf",
         (gltf) => {
           gltf.scene.traverse((node) => {
             if (node.isMesh) {
@@ -209,14 +236,23 @@ export default defineComponent({
           });
 
           scene.add(gltf.scene);
+          dismiss();
+          gsap.delayedCall(1, () => {
+            showTitle.value = false;
+            gsap.delayedCall(1, () => {
+              showMenu.value = true;
+            });
+          });
         },
-        // called while loading is progressing
         (xhr) => {
-          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+          const contentLength = 106404;
+          const percent = (xhr.loaded / contentLength) * 100;
+          dismiss({
+            message: `Loading assets ${percent}%...`,
+          });
         },
-        // called when loading has errors
         (error) => {
-          console.log("An error happened");
+          console.log("An error happened", error);
         }
       );
 
@@ -311,7 +347,14 @@ export default defineComponent({
 
     onMounted(async () => {
       if (WebGL.isWebGLAvailable()) {
-        const threeApi = await startup();
+        const notif = $q.notify({
+          message: "Loading assets 0%...",
+          timeout: 0,
+          color: "dark",
+          textColor: "info",
+          type: "ongoing",
+        });
+        const threeApi = await startup(notif);
         const { moveCam, goFullScreen } = threeApi;
         mover.value = moveCam;
         fuller.value = goFullScreen;
@@ -334,6 +377,8 @@ export default defineComponent({
       isFullScreen,
       tab: ref("mails"),
       splitterModel: ref(20), //add shadows, bruh
+      showTitle,
+      showMenu,
     };
   },
 });
@@ -343,6 +388,7 @@ export default defineComponent({
 .errLink
 	a
 		color: red !important
+
 #screen
 	position: fixed
 	top: 0
@@ -351,4 +397,11 @@ export default defineComponent({
 
 #navCard
 	width: 50vw
+
+#title
+	text-transform: uppercase
+	font-size: 7rem
+	line-height: 8rem
+	font-weight: 800
+	text-shadow: 6px -5px #3E94E7, 5px -4px #3E94E7, 4px -5px #3E94E7, 4px -6px #3E94E7, 3px -4px #3E94E7,3px -5px #3E94E7, 2px -3px #3E94E7, 2px -4px #3E94E7,1px -2px #3E94E7, 1px -3px #3E94E7, 0 -1px #3E94E7,0 -2px #3E94E7, -1px 0 #3E94E7, -1px 2px #3E94E7, -2px 1px #3E94E7, -2px 3px #3E94E7, -3px 2px #3E94E7, -3px 4px #3E94E7, -4px 3px #3E94E7, -4px 5px #3E94E7, -5px 4px #3E94E7, -5px 6px #3E94E7, -6px 5px #3E94E7, -6px 7px #3E94E7, -7px 6px #3E94E7, -7px 8px #3E94E7, -8px 7px #3E94E7, -8px 9px #3E94E7, -9px 8px #3E94E7, -9px 10px #3E94E7, -10px 9px #3E94E7, -10px 11px #3E94E7, -11px 10px #3E94E7, -11px 12px #3E94E7, -12px 11px #3E94E7, -12px 13px #3E94E7, -13px 12px #3E94E7, -13px 14px #3E94E7, -14px 13px #3E94E7, -14px 15px #3E94E7, -15px 14px #3E94E7, -15px 16px #3E94E7, -16px 15px #3E94E7, -16px 17px #3E94E7, -17px 16px #3E94E7, -17px 18px #3E94E7, -18px 17px #3E94E7, -18px 19px #3E94E7, -19px 18px #3E94E7, -19px 20px #3E94E7, -20px 19px #3E94E7, -20px 21px #3E94E7, -21px 20px #3E94E7, -21px 22px #3E94E7, -22px 21px #3E94E7, -22px 23px #3E94E7, -23px 25px #3E94E7, -23px 24px #3E94E7, -24px 26px #3E94E7, -24px 25px #3E94E7, -25px 27px #3E94E7, -25px 26px #3E94E7, -26px 28px #3E94E7, -26px 27px #3E94E7, -27px 29px #3E94E7, -27px 28px #3E94E7, -28px 30px #3E94E7, -28px 29px #3E94E7, -29px 31px #3E94E7, -29px 30px #3E94E7, -30px 32px #3E94E7, -30px 31px #3E94E7,
 </style>
