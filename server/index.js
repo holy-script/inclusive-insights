@@ -4,8 +4,13 @@ import history from "connect-history-api-fallback";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import { ChatGPTAPI } from "chatgpt";
+import { appendFile } from "fs/promises";
 
 dotenv.config();
+
+const logger = async (txt) => {
+	await appendFile("logs.txt", txt);
+};
 
 const biasPresent = async (msg) => {
 	const api = new ChatGPTAPI({
@@ -14,10 +19,39 @@ const biasPresent = async (msg) => {
 	});
 
 	const res = await api.sendMessage(msg);
+	await logger(JSON.stringify(res) + "\n");
 
 	if (res.text == "1") return true;
 	else if (res.text == "0") return false;
 	else return "Error Occurred";
+};
+
+const creatGuidance = async (speaker, situation) => {
+	const api = new ChatGPTAPI({
+		apiKey: process.env.OPENAI_API_KEY,
+		systemMessage: `${process.env.NARRATION_PROMPT}`,
+	});
+
+	const res = await api.sendMessage(
+		`Create a narrative dialogue with "${speaker}" thinking about the situation of bias "${situation}"`
+	);
+	await logger(JSON.stringify(res) + "\n");
+
+	return res.text;
+};
+
+const createEmpathy = async (speaker, situation) => {
+	const api = new ChatGPTAPI({
+		apiKey: process.env.OPENAI_API_KEY,
+		systemMessage: `${process.env.NARRATION_PROMPT}`,
+	});
+
+	const res = await api.sendMessage(
+		`Create a response in the style of "${speaker}" for the situation "${situation}"`
+	);
+	await logger(JSON.stringify(res) + "\n");
+
+	return res.text;
 };
 
 const app = express();
@@ -40,11 +74,34 @@ app.use((req, res, next) => {
 });
 app.use(history());
 
-app.post("/detect", async (req, res) => {
+app.post("/guidance", async (req, res) => {
 	console.log(req.body.chat);
 	const presence = await biasPresent(req.body.chat);
 	if (presence == "Error Occurred") res.status(500).send(presence);
-	else res.send(`Bias Presence: ${presence}`);
+	else {
+		if (presence) {
+			const guidance = await creatGuidance(
+				req.body.speaker,
+				req.body.chat
+			);
+			res.send(guidance);
+		} else res.send("Please input a situation of bias.");
+	}
+});
+
+app.post("/empathy", async (req, res) => {
+	console.log(req.body.chat);
+	const presence = await biasPresent(req.body.chat);
+	if (presence == "Error Occurred") res.status(500).send(presence);
+	else {
+		if (presence) {
+			const empathy = await createEmpathy(
+				req.body.speaker,
+				req.body.chat
+			);
+			res.send(empathy);
+		} else res.send("Please input a situation of bias.");
+	}
 });
 
 app.use("/", async (req, res) => {
