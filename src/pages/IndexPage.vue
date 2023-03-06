@@ -1,5 +1,6 @@
 <template>
   <q-page
+    ref="app"
     id="app"
     class="flex flex-center bg-black"
   >
@@ -29,9 +30,9 @@
         glossy
         class="shadow-10"
         color="blue-5"
-        :icon-right="isFullScreen ? 'fullscreen_exit' : 'fullscreen'"
+        :icon-right="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"
         label="Fullscreen"
-        @click="fuller"
+        @click="toggle"
       />
     </q-page-sticky>
     <q-page-sticky
@@ -405,6 +406,7 @@ import { useQuasar } from "quasar";
 import { gsap } from "gsap";
 import { api, axios } from "boot/axios";
 import chatgptLogo from "assets/chatgpt-logo.png";
+import { useFullscreen } from "@vueuse/core";
 
 export default defineComponent({
   name: "IndexPage",
@@ -444,10 +446,8 @@ export default defineComponent({
       height: window.innerHeight,
     };
     const mover = ref();
-    const fuller = ref();
     const chatter = ref();
     const resumer = ref();
-    const isFullScreen = ref(false);
     const showTitle = ref(true);
     const showMenu = ref(false);
     const showChat = ref(false);
@@ -500,6 +500,8 @@ export default defineComponent({
     const scrollerHeight = ref(0);
     const mode = ref("empathy");
     const selected = ref(null);
+    const { isFullscreen, toggle } = useFullscreen();
+    const app = ref();
 
     const getTime = (date) => {
       let hours = date.getHours();
@@ -706,21 +708,6 @@ export default defineComponent({
           });
       };
 
-      const goFullScreen = async () => {
-        isFullScreen.value = !isFullScreen.value;
-        const app = document.getElementById("app");
-        const fullScreenElement =
-          document.fullscreenElement || document.webkitFullScreenElement;
-        if (!fullScreenElement) {
-          if (app.requestFullscreen) app.requestFullscreen();
-          else if (app.webkitRequestFullScreen) app.webkitRequestFullScreen();
-        } else {
-          if (document.exitFullscreen) document.exitFullscreen();
-          else if (document.webkitExitFullScreen)
-            document.webkitExitFullScreen();
-        }
-      };
-
       const goChat = async () => {
         timeline.pause().kill();
         for (let child of timeline.getChildren()) {
@@ -739,7 +726,7 @@ export default defineComponent({
         moveCam(index);
       };
 
-      return { moveCam, goFullScreen, goChat, goMenu };
+      return { moveCam, goChat, goMenu };
     };
 
     onMounted(async () => {
@@ -777,9 +764,8 @@ export default defineComponent({
           type: "ongoing",
         });
         const threeApi = await startup(notif);
-        const { moveCam, goFullScreen, goChat, goMenu } = threeApi;
+        const { moveCam, goChat, goMenu } = threeApi;
         mover.value = moveCam;
-        fuller.value = goFullScreen;
         chatter.value = goChat;
         resumer.value = goMenu;
         if (arr.length) mover.value();
@@ -818,10 +804,11 @@ export default defineComponent({
 
     return {
       mover,
-      fuller,
       chatter,
       resumer,
-      isFullScreen,
+      isFullscreen,
+      toggle,
+      app,
       tab: ref("home"),
       splitterModel: ref(20),
       showTitle,
