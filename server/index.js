@@ -4,13 +4,14 @@ import history from "connect-history-api-fallback";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import { ChatGPTAPI } from "chatgpt";
-import { appendFile } from "fs/promises";
+import path from "path";
+import url from "url";
+import https from "https";
+import fsync from "fs";
 
 dotenv.config();
 
-const logger = async (txt) => {
-	await appendFile("logs.txt", txt);
-};
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const biasPresent = async (msg) => {
 	const api = new ChatGPTAPI({
@@ -19,7 +20,6 @@ const biasPresent = async (msg) => {
 	});
 
 	const res = await api.sendMessage(msg);
-	await logger(JSON.stringify(res) + "\n");
 
 	if (res.text == "1") return true;
 	else if (res.text == "0") return false;
@@ -35,7 +35,6 @@ const creatGuidance = async (speaker, situation) => {
 	const res = await api.sendMessage(
 		`Create a narrative dialogue with "${speaker}" thinking about the situation of bias "${situation}"`
 	);
-	await logger(JSON.stringify(res) + "\n");
 
 	return res.text;
 };
@@ -49,7 +48,6 @@ const createEmpathy = async (speaker, situation) => {
 	const res = await api.sendMessage(
 		`Create a response in the style of "${speaker}" for the situation "${situation}"`
 	);
-	await logger(JSON.stringify(res) + "\n");
 
 	return res.text;
 };
@@ -108,6 +106,13 @@ app.use("/", async (req, res) => {
 	res.send("Hello, world!");
 });
 
-app.listen(3000, () => {
-	console.log("Server is running on port 3000.");
-});
+https
+	.createServer(
+		{
+			cert: fsync.readFileSync(path.join(__dirname, "certificate.crt")),
+			key: fsync.readFileSync(path.join(__dirname, "private.key")),
+		},
+		app
+	)
+	.listen(3000);
+console.log("Listening at http://localhost:3000");

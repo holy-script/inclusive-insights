@@ -28,7 +28,7 @@
         push
         glossy
         class="shadow-10"
-        color="primary"
+        color="blue-5"
         :icon-right="isFullScreen ? 'fullscreen_exit' : 'fullscreen'"
         label="Fullscreen"
         @click="fuller"
@@ -189,17 +189,6 @@
           id="chatCard"
           class="shadow-10 flex column justify-evenly"
         >
-          <q-btn
-            color="warning"
-            label="Menu"
-            icon="menu"
-            stack
-            rounded
-            push
-            glossy
-            @click="resumer"
-            id="menuBtn"
-          />
           <q-scroll-area
             id="chatBox"
             class="q-pa-md relative-position"
@@ -210,10 +199,10 @@
             <q-chat-message
               v-for="(msg, index) in chatsList"
               :key="index"
-              :name="msg.byUser ? 'You' : 'ChatGPT Narrator'"
+              :name="msg.byUser ? 'You' : `ChatGPT Simulation - ${msg.speaker}`"
               :sent="msg.byUser"
               :stamp="msg.time"
-              size="8"
+              size="9"
             >
               <div
                 v-for="(txt, index) in msg.chat"
@@ -261,7 +250,7 @@
                     icon="send"
                     rounded
                     push
-                    :disable="!chatQuery"
+                    :disable="!chatQuery || !selected"
                     :loading="loadingChat"
                     class="shadow-4"
                     type="submit"
@@ -282,6 +271,33 @@
             />
             <div class="text-h6">No Messages Yet</div>
           </div>
+          <q-card
+            bordered
+            id="chatFooter"
+            class="flex flex-center row justify-evenly items-center shadow-10"
+          >
+            <q-select
+              filled
+              outlined
+              color="blue-9"
+              bg-color="red-3"
+              v-model="selected"
+              label-color="white"
+              label="You are talking to..."
+              :options="womenList.map((val) => val.name)"
+              style="width: 70%"
+            >
+            </q-select>
+            <q-btn
+              color="yellow-8"
+              label="Menu"
+              icon="menu"
+              stack
+              rounded
+              push
+              @click="resumer"
+            />
+          </q-card>
         </q-card>
       </transition>
     </q-page-sticky>
@@ -290,7 +306,7 @@
       :offset="[180, 18]"
     >
       <q-btn
-        color="purple"
+        color="indigo-5"
         icon="settings"
         label="Settings"
         push
@@ -437,7 +453,7 @@ export default defineComponent({
     const showChat = ref(false);
     const timeline = gsap.timeline();
     const chatQuery = ref("");
-    const womenList = [
+    const womenList = ref([
       { name: "Malala Yousafzai", about: "Activist and Nobel Prize laureate" },
       { name: "Oprah Winfrey", about: "Media executive and talk show host" },
       { name: "Kamala Harris", about: "Vice President of the United States" },
@@ -477,12 +493,13 @@ export default defineComponent({
         about: "Physicist and chemist, Nobel Prize laureate",
       },
       { name: "Greta Thunberg", about: "Climate activist" },
-    ];
+    ]);
     const chatsList = ref([]);
     const loadingChat = ref(false);
     const scrollArea = ref(null);
     const scrollerHeight = ref(0);
     const mode = ref("empathy");
+    const selected = ref(null);
 
     const getTime = (date) => {
       let hours = date.getHours();
@@ -532,11 +549,12 @@ export default defineComponent({
         chat: [],
         byUser: false,
         time: getTime(new Date()),
+        speaker: selected.value,
       });
 
       const { data } = await api.post(mode.value, {
         chat,
-        speaker: womenList[0],
+        speaker: selected.value,
       });
 
       chatsList.value.pop();
@@ -545,6 +563,7 @@ export default defineComponent({
         chat: [data],
         byUser: false,
         time: getTime(new Date()),
+        speaker: selected.value,
       });
 
       loadingChat.value = false;
@@ -724,7 +743,31 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      // console.log((await api.get("")).data);
+      try {
+        const test = await api.get("");
+        if (test.data == "Hello, world!") {
+          console.log("API is working");
+        } else {
+          $q.notify({
+            message: "API is not working 😶",
+            color: "dark",
+            textColor: "negative",
+            type: "negative",
+            timeout: 0,
+            position: "top",
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        $q.notify({
+          message: "API is not working 😶",
+          color: "dark",
+          textColor: "negative",
+          type: "negative",
+          timeout: 0,
+          position: "top",
+        });
+      }
       if (WebGL.isWebGLAvailable()) {
         const notif = $q.notify({
           message: "Loading assets 0%...",
@@ -760,6 +803,19 @@ export default defineComponent({
       scrollArea.value.setScrollPosition("vertical", val);
     });
 
+    watch(selected, (val) => {
+      if (val !== null && showChat.value) {
+        $q.notify({
+          message: womenList.value.find((w) => w.name === val).about,
+          color: "dark",
+          textColor: "info",
+          type: "positive",
+          position: "bottom",
+          timeout: 2000,
+        });
+      }
+    });
+
     return {
       mover,
       fuller,
@@ -780,6 +836,8 @@ export default defineComponent({
       scrollerHeight,
       monitorScroll,
       mode,
+      womenList,
+      selected,
     };
   },
 });
@@ -836,16 +894,10 @@ export default defineComponent({
 	border-radius: 14px
 
 #chatCard
-	width: 40vw
+	width: 50vw
 	height: 60vh
 	position: relative
 	border-radius: 7px
-
-#menuBtn
-	position: absolute
-	bottom: -4rem
-	left: 50%
-	transform: translateX(-50%)
 
 #chatBox
 	height: 80%
@@ -865,4 +917,19 @@ export default defineComponent({
 	width: 15rem
 	height: 15rem
 	border-radius: 50%
+
+#chatFooter
+	position: absolute
+	width: 100%
+	height: 18%
+	bottom: -5rem
+	left: 0
+	border-radius: 7px
+	background: #e7943e
+	border: 2px solid #37967c
+
+.q-message-text-content, .q-message-text-content-received
+	div
+		line-height: 1.5
+		font-size: 1rem
 </style>
